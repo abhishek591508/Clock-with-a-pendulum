@@ -8,6 +8,10 @@ A simple **Computer Graphics** mini project in C: an analog clock with real-time
 - Pendulum motion using simple harmonic motion: θ = A·cos(√(g/L)·t)
 - Classic drawing algorithms (no built-in `line()` / `circle()` for main shapes)
 
+- image :
+- <img width="500" height="300" alt="image" src="https://github.com/user-attachments/assets/06a34e3b-4179-4317-9267-cf760ec7bdbd" />
+
+
 ## CG Concepts Used
 
 | Concept | Usage |
