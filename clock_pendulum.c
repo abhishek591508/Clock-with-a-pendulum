@@ -13,8 +13,20 @@
 #include <math.h>
 #include <time.h>
 #include <stdio.h>
+#include <windows.h>   /* GetTickCount for real wall-clock time */
 
-#define PI 3.14159265
+#define PI          3.14159265
+#define GRAVITY     9.81          /* m/s^2 */
+#define PX_TO_M     0.01          /* 1 pixel = 1 cm (rod length in metres) */
+#define PEND_AMP    25.0          /* max swing in degrees (small-angle) */
+
+/* Simple pendulum: angle = A * cos(omega * t),  omega = sqrt(g/L) */
+double pendulum_angle(int rod_len_px, double t_sec)
+{
+    double L = rod_len_px * PX_TO_M;
+    double omega = sqrt(GRAVITY / L);
+    return PEND_AMP * cos(omega * t_sec);
+}
 
 /* ---------- Bresenham Line ---------- */
 void bresenham_line(int x0, int y0, int x1, int y1, int col)
@@ -136,12 +148,12 @@ int main(void)
     int gd = DETECT, gm;
     int cx, cy, radius = 120;
     int pivot_x, pivot_y, pend_len = 90;
-    double pend_angle;
+    double pend_angle, t_sec;
+    DWORD pend_start = 0;
     time_t t;
     struct tm *now;
     int h, m, s;
     float hour_ang, min_ang, sec_ang;
-    unsigned long frame = 0;
 
     initgraph(&gd, &gm, "");
 
@@ -164,8 +176,11 @@ int main(void)
         min_ang  = (m * 6.0) + (s * 0.1);
         sec_ang  = s * 6.0;
 
-        /* pendulum swings (simple harmonic motion) */
-        pend_angle = 25.0 * sin(frame * 0.08);
+        /* real wall-clock time so speed stays correct (not tied to frame count) */
+        if (pend_start == 0)
+            pend_start = GetTickCount();
+        t_sec = (GetTickCount() - pend_start) / 1000.0;
+        pend_angle = pendulum_angle(pend_len, t_sec);
 
         cleardevice();
 
@@ -193,7 +208,6 @@ int main(void)
         outtextxy(cx, 10, "Analog Clock with Pendulum - CG Project");
         outtextxy(cx, getmaxy() - 25, "Press any key to exit");
 
-        frame++;
         delay(50);
     }
 
